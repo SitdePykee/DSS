@@ -72,7 +72,7 @@ class DigitalSignatureApp(QWidget):
                              f"e2: {e2}\n" \
                              f"beta: {beta}\n" \
                              f"gamma: {gamma}\n" \
-                             f"delta: {delta}" \
+                             f"delta: {delta}\n" \
                              f"=> Pair of signatures ({gamma},{delta})"
             self.result_display.setPlainText(signature_text)
 
