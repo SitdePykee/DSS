@@ -5,7 +5,7 @@ class DigitalSignatureApp(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Digital Signature Calculation")
-        self.setGeometry(100, 100, 400, 400)  # Increased height to accommodate additional components
+        self.setGeometry(100, 100, 400, 500)  # Increased height to accommodate additional components
         self.initUI()
 
         self.p = None
@@ -80,13 +80,13 @@ class DigitalSignatureApp(QWidget):
             self.e1 = self.x * pow(self.delta, -1, self.q) % self.q
             self.e2 = self.gamma * pow(self.delta, -1, self.q) % self.q
 
-            signature_text = f"e1: {self.e1}\n" \
+            result_text = f"e1: {self.e1}\n" \
                              f"e2: {self.e2}\n" \
                              f"beta: {self.beta}\n" \
                              f"gamma: {self.gamma}\n" \
                              f"delta: {self.delta}\n" \
                              f"=> Pair of signatures ({self.gamma},{self.delta})"
-            self.result_display.setPlainText(signature_text)
+            self.result_display.setPlainText(result_text)
 
         except ValueError:
             self.result_display.setPlainText("Invalid input")
@@ -94,11 +94,17 @@ class DigitalSignatureApp(QWidget):
 
     def verify_signature(self):
         try:
-            if (pow(self.alpha, self.e1) * pow(self.beta, self.e2)) % self.p % self.q == self.gamma:
-                self.verify_status_label.setText("Valid" )
+            signature_check = (pow(self.alpha, self.e1) * pow(self.beta, self.e2)) % self.p % self.q
+            if signature_check == self.gamma:
+                signature_text_true = f"-((alpha^e1 * beta^e2) mod p) mod q = {signature_check} = gamma " \
+                                      f"\n-Ver({self.x},{self.gamma},{self.delta}) = TRUE" \
+                                      f"\n--->Verify valid signature"
+                self.verify_status_label.setText(signature_text_true)
             else:
-                self.verify_status_label.setText("Invalid")
-
+                signature_text_false = f"-((alpha^e1 * beta^e2) mod p) mod q = {signature_check} != gamma " \
+                                       f"\n-Ver({self.x},{self.gamma},{self.delta}) = FALSE" \
+                                       f"\n--->Verify invalid signature"
+                self.verify_status_label.setText(signature_text_false)
         except ValueError:
             self.verify_status_label.setText("Invalid input")
 
