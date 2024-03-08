@@ -8,6 +8,18 @@ class DigitalSignatureApp(QWidget):
         self.setGeometry(100, 100, 400, 400)  # Increased height to accommodate additional components
         self.initUI()
 
+        self.p = None
+        self.q = None
+        self.alpha = None
+        self.a = None
+        self.k = None
+        self.x = None
+        self.beta = None
+        self.gamma = None
+        self.delta = None
+        self.e1 = None
+        self.e2 = None
+
     def initUI(self):
         layout = QVBoxLayout()
         self.p_entry = QLineEdit()
@@ -52,28 +64,28 @@ class DigitalSignatureApp(QWidget):
 
     def calculate_signature(self):
         try:
-            p = int(self.p_entry.text())
-            q = int(self.q_entry.text())
-            alpha = int(self.alpha_entry.text())
-            a = int(self.a_entry.text())
-            k = int(self.k_entry.text())
-            x = int(self.x_entry.text())
+            self.p = int(self.p_entry.text())
+            self.q = int(self.q_entry.text())
+            self.alpha = int(self.alpha_entry.text())
+            self.a = int(self.a_entry.text())
+            self.k = int(self.k_entry.text())
+            self.x = int(self.x_entry.text())
 
-            if not (1 <= k <= q - 1):
+            if not (1 <= self.k <= self.q - 1):
                 raise ValueError("k must be in the range 1 <= k <= q - 1")
 
-            beta = pow(alpha, a, p)
-            gamma = pow(alpha, k, p) % q
-            delta = ((x + a * gamma) * pow(k, -1, q)) % q
-            e1 = x * pow(delta, -1, q) % q
-            e2 = gamma * pow(delta, -1, q) % q
+            self.beta = pow(self.alpha, self.a, self.p)
+            self.gamma = pow(self.alpha, self.k, self.p) % self.q
+            self.delta = ((self.x + self.a * self.gamma) * pow(self.k, -1, self.q)) % self.q
+            self.e1 = self.x * pow(self.delta, -1, self.q) % self.q
+            self.e2 = self.gamma * pow(self.delta, -1, self.q) % self.q
 
-            signature_text = f"e1: {e1}\n" \
-                             f"e2: {e2}\n" \
-                             f"beta: {beta}\n" \
-                             f"gamma: {gamma}\n" \
-                             f"delta: {delta}\n" \
-                             f"=> Pair of signatures ({gamma},{delta})"
+            signature_text = f"e1: {self.e1}\n" \
+                             f"e2: {self.e2}\n" \
+                             f"beta: {self.beta}\n" \
+                             f"gamma: {self.gamma}\n" \
+                             f"delta: {self.delta}\n" \
+                             f"=> Pair of signatures ({self.gamma},{self.delta})"
             self.result_display.setPlainText(signature_text)
 
         except ValueError:
@@ -82,20 +94,7 @@ class DigitalSignatureApp(QWidget):
 
     def verify_signature(self):
         try:
-            p = int(self.p_entry.text())
-            q = int(self.q_entry.text())
-            alpha = int(self.alpha_entry.text())
-            a = int(self.a_entry.text())
-            k = int(self.k_entry.text())
-            x = int(self.x_entry.text())
-
-            beta = pow(alpha, a, p)
-            gamma = pow(alpha, k, p) % q
-            delta = ((x + a * gamma) * pow(k, -1, q)) % q
-            e1 = x * pow(delta, -1, q) % q
-            e2 = gamma * pow(delta, -1, q) % q
-
-            if (pow(alpha, e1) * pow(beta, e2)) % p % q == gamma:
+            if (pow(self.alpha, self.e1) * pow(self.beta, self.e2)) % self.p % self.q == self.gamma:
                 self.verify_status_label.setText("Valid" )
             else:
                 self.verify_status_label.setText("Invalid")
