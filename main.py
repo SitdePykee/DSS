@@ -10,7 +10,7 @@ class DigitalSignatureApp(QWidget):
         super().__init__()
         self.setWindowTitle("Digital Signature Calculation")
         self.setWindowIcon(QtGui.QIcon('decryption.png'))
-        self.setGeometry(100, 100, 400, 500)
+        self.setGeometry(100, 100, 700, 500)
         self.initUI()
 
         self.p = None
@@ -79,10 +79,13 @@ class DigitalSignatureApp(QWidget):
             self.message_hash = int.from_bytes(hashlib.sha256(message).digest(), byteorder='big')
 
             if not (isprime(self.p) and isprime(self.q)):
-                raise ValueError("p and q must be prime numbers")
+                raise ValueError("Error, p and q must be prime numbers")    # điều kiện p,q là số nguyên tố
+
+            if not ((self.p-1) % self.q == 0):
+                raise ValueError("Error, (p-1) is not divisible by q.")
 
             if not (1 <= self.k <= self.q - 1):
-                raise ValueError("k must be in the range 1 <= k <= q - 1")
+                raise ValueError("Error, k must be in the range 1 <= k <= q - 1")
 
             self.alpha = pow(self.g, int((self.p - 1) / self.q)) % self.p
             self.beta = pow(self.alpha, self.a, self.p)
